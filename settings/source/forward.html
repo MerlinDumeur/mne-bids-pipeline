@@ -67,7 +67,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#config.spacing" class="md-skip">
+        <a href="#config.mri_t1_path_generator" class="md-skip">
           Skip to content
         </a>
       
@@ -744,6 +744,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#config.mri_t1_path_generator" class="md-nav__link">
+    mri_t1_path_generator
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#config.spacing" class="md-nav__link">
     spacing
   </a>
@@ -962,6 +969,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#config.mri_t1_path_generator" class="md-nav__link">
+    mri_t1_path_generator
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#config.spacing" class="md-nav__link">
     spacing
   </a>
@@ -995,6 +1009,75 @@
                   <h1>Source space & forward solution</h1>
                 
                 <div class="doc doc-object doc-attribute">
+
+
+
+<h2 id="config.mri_t1_path_generator" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">mri_t1_path_generator</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span></code>
+
+
+<a href="#config.mri_t1_path_generator" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+      <p>To perform source-level analyses, the Pipeline needs to generate a
+transformation matrix that translates coordinates from MEG and EEG sensor
+space to MRI space, and vice versa. This process, called "coregistration",
+requires access to both, the electrophyisiological recordings as well as
+T1-weighted MRI images of the same participant. If both are stored within
+the same session, the Pipeline (or, more specicifally, MNE-BIDS) can find the
+respective files automatically.</p>
+<p>However, in certain situations, this is not possible. Examples include:</p>
+<ul>
+<li>MRI was conducted during a different session than the electrophysiological
+  recording.</li>
+<li>MRI was conducated in a single session, while electrophysiological recordings
+  spanned across several sessions.</li>
+<li>MRI and electrophysiological data are stored in separate BIDS datasets to
+  allow easier storage and distribution in certain situations.</li>
+</ul>
+<p>To allow the Pipeline to find the correct MRI images and perform coregistration
+automatically, we provide a "hook" that allows you to provide in a custom
+function whose output tells the Pipeline where to find the T1-weightes image.</p>
+<p>The function is expected to accept a single parameter. The Pipeline will pass
+a <code>BIDSPath</code> with the following parameters set based on the currently processed
+electrophysiological data:</p>
+<ul>
+<li>the subject ID, <code>BIDSPath.subject</code></li>
+<li>the experimental session, <code>BIDSPath.session</code></li>
+<li>the BIDS root, <code>BIDSPath.root</code></li>
+</ul>
+<p>This <code>BIDSPath</code> can then be modified – or an entirely new <code>BIDSPath</code> can be
+generated – and returned by the function, pointing to the T1-weighted image.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The function accepts and returns a single <code>BIDSPath</code>.</p>
+</div>
+<details class="example" open="open"><summary>Example</summary><p>The MRI session is different than the electrophysiological session:
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_t1_from_meeg</span><span class="p">(</span><span class="n">bids_path</span><span class="p">):</span>
+    <span class="n">bids_path</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="s1">&#39;MRI&#39;</span>
+    <span class="k">return</span> <span class="n">bids_path</span>
+
+
+<span class="n">mri_t1_path_generator</span> <span class="o">=</span> <span class="n">get_t1_from_meeg</span>
+</code></pre></div></p>
+<p>The MRI recording is stored in a different BIDS dataset than the
+electrophysiological data:
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_t1_from_meeg</span><span class="p">(</span><span class="n">bids_path</span><span class="p">):</span>
+    <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="s1">&#39;/data/mri&#39;</span>
+    <span class="k">return</span> <span class="n">bids_path</span>
+
+
+<span class="n">mri_t1_path_generator</span> <span class="o">=</span> <span class="n">get_t1_from_meeg</span>
+</code></pre></div></p>
+</details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-attribute">
 
 
 
